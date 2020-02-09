@@ -1,0 +1,101 @@
+---
+title: "Assignment 3 - By Himanshu Singhal"
+output: html_notebook
+fig_width: 10 
+fig_height: 10
+---
+
+```{r fig_width = 20 ,fig_height = 20}
+
+#install.packages("arules")
+library(arules)
+##QUestion 1
+#c)using the apriori algorithm
+dataq1<-read.csv("transaction.csv", sep = ",", header = T)
+#head(dataq1)
+str(dataq1)
+dfq1<-subset(dataq1, select = -c(F))
+#head(dfq1)
+str(dfq1)
+dfq1$Transaction.ID<-as.factor(dfq1$Transaction.ID)
+dfq1$A<-as.logical((dfq1$A))
+dfq1$B<-as.logical((dfq1$B))
+dfq1$C<-as.logical((dfq1$C))
+dfq1$D<-as.logical((dfq1$D))
+dfq1$E<-as.logical((dfq1$E))
+str(dfq1)
+#generate rules to classify
+rules.all <- apriori(dfq1)
+#inspect(rules.all)
+#summary(rules.all)
+
+#create a new parameter to reduce the number of rules
+rules1<-apriori(dfq1, parameter = list(minlen=1, supp=0.4, conf=0.8))
+#inspect(rules1)
+#summary(rules1)
+rules2<-apriori(dfq1, parameter = list(minlen=2, supp=0.4, conf=0.8))
+#inspect(rules2)
+#summary(rules2)
+rules3<-apriori(dfq1, parameter = list(minlen=3, supp=0.4, conf=0.8))
+#inspect(rules3)
+#summary(rules3)
+
+
+##Question 2
+#load the file data
+library(cluster) 
+# an enhanced version that does not require one to specify no of clusters
+#install.packages("fpc")
+library(fpc) 
+MLdata<-read.csv("HTRU_2.csv")
+#head(MLdata)
+str(MLdata)
+#MLdata$CLASS<-as.factor(MLdata$CLASS)
+#exclude class variable from the analysis
+df<-subset(MLdata, select = -c(CLASS))
+#head(df)
+kmeans.result_df <- kmeans(df, centers=2)
+#kmeans.result_df
+#kmeans.result_MLdata<-kmeans(MLdata, centers=2)
+#kmeans.result_MLdata
+#plot(df [], col = kmeans.result$cluster)
+#uncomment this if you want to see the plots
+#for (i in 1:7){
+#  for (j in 2:8){
+#    if (j > i){
+#      plot(df[c(i,j)], col = kmeans.result$cluster)
+#    }
+#    j = j+1
+
+#  }
+#  i = i+1
+#}
+# kmed.result<-kmedoids(df, 2)
+# plot(df [], col = kmed.result$cluster)
+
+pam.result <- pam(MLdata, 2)
+table(pam.result$clustering, MLdata$CLASS)
+#par(mfrow=c(1,2))
+layout(matrix(c(1,2),1,2))
+plot(pam.result)
+
+```
+Question 1 - 
+a)Compute the support
+  {E} has a support of 10/12 = 0.83
+  {B,D} has a support of 3/12 = 0.25
+  {B,D,E} has a support of 3/12 = 0.25
+  
+b)compute the confidence
+  BD->E has a confidence of 3/3 = 1
+  E->BD has a confidence of 3/10 = 0.3
+  
+c)Total number of rules for sup = 0.4 and conf = 0.8
+  for a minlength = 1, total rules are 4
+  for a minlength = 2, total rules are 3
+  for a minlength = 3, total tules are 0
+  
+  
+Question 2 - 
+2) 2 clusters of size 2596 and 15302 were formed with an accuracy of 48.6 %.
+3) 2 clusters of size 5761 and 12137 were formed with an accuracy of 76.98 % and average silhouette width of 0.47. 
