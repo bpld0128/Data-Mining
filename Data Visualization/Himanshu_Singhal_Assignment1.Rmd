@@ -1,0 +1,69 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+---
+Title: "Assignment 1_bore diameter"
+Author: "Himanshu Singhal"
+UID: "115891944"
+output: html_notebook
+---
+
+```{r}
+
+install.packages("openxlsx")
+library(openxlsx)
+bdata <- readWorkbook("BoreData.xlsx", sheet = 1)
+View(bdata) # uncomment this line to view bdata in a new window
+
+#Creates a figure with 4 subplots showing the data for each machine
+par(mfrow=c(2,2))
+plot(bdata$HoleMaker,main="Hole Maker", type = "p", xlab="Shaft Number", 
+     ylab = "diameter", xlim = c(1,100), ylim = c(1.5,3.5))
+plot(bdata$ShaftsSlips,main="Shafts & Slips", type = "p", xlab="Shaft Number", 
+     ylab = "diameter", xlim = c(1,100), ylim = c(1.5,3.5))
+plot(bdata$JudgesJigs,main="JudgesJigs", type = "p", xlab="Shaft Number", 
+     ylab = "diameter", xlim = c(1,100), ylim = c(1.5,3.5))
+plot(bdata$DrillforBits ,main="DrillforBits", type = "p", xlab="Shaft Number", 
+     ylab = "diameter", xlim = c(1,100), ylim = c(1.5,3.5))
+
+#Creates a figure with subplots showing the QQ plots
+par(mfrow=c(2,2))
+qqnorm(bdata$HoleMaker, main = "Q-Q Plot for HoleMaker")
+qqline(bdata$HoleMaker)
+qqnorm(bdata$JudgesJigs, main = "Q-Q Plot for JudgesJigs")
+qqline(bdata$JudgesJigs)
+qqnorm(bdata$DrillforBits, main = "Q-Q Plot for DrillforBits")
+qqline(bdata$DrillforBits)
+qqnorm(bdata$ShaftsSlips, main = "Q-Q plot for ShaftsSlips")
+qqline(bdata$ShaftsSlips)
+
+#creates a figure with subplots showing the joint Q-Q plots
+HoleMaker<-c(bdata$HoleMaker)
+DrillforBits<-c(bdata$DrillforBits)
+JudgesJigs<-c(bdata$JudgesJigs)
+ShaftsSlips<-c(bdata$ShaftsSlips)
+
+par(mfrow=c(1,3))
+# n = max(length(bdata$HoleMaker), length(bdata$DrillforBits))
+# p = (1:n - 1)/(n - 1)
+# qx = quantile(bdata$HoleMaker, p)
+# qy = quantile(bdata$DrillforBits, p)
+# plot(qx, qy, xlab = "Hole Maker", ylab = "Judges Jigs")
+qqplot(HoleMaker,DrillforBits, main = "HoleMaker vs Drill for Bits")
+qqplot(HoleMaker,JudgesJigs, main = "HoleMaker vs Judges Jigs")
+# qqplot(HoleMaker,ShaftsSlips, main = "HoleMaker vs Shafts Slips")
+# qqplot(ShaftsSlips,DrillforBits, main = "Drill for Bits vs Shafts Slips")
+qqplot(JudgesJigs,DrillforBits, main = "Drill for Bits vs Judges Jigs")
+# qqplot(JudgesJigs,ShaftsSlips, main = "Shafts Slips vs Judges Jigs")
+
+```
+CONCLUSION:
+Bore Diamter Task - 
+It can be observed from the scatter plots that JudgesJigs has the best accuracy and precision for the dataset. The sample quantities most closely resembles the theoretical quantities, and after calibration, it can be used to acheive nearly perfect samples.DrillforBits has the most sparsed data and is not a reliable machine. HoleMakers and ShafsSlips lie in between these two machine quality.
+
+From the Q-Q plots, it can be observed that Judges Jigs machine has the most linear distribution, indicating that the data samples were uniform. Drill for bits vs HoleMakers has a linear line but with a long range on the yaxis indicating that Drill for bits does not perform well when compared to HoleMaker. Jugdes Jigs has a uniform straight line in other two plots indicating that JudgesJigs machine has the most consistent data and is the best machine to produce the desired product.
+
+
+

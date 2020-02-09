@@ -1,0 +1,36 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+---
+Title: "Assignment 1_voltage"
+Author: "Himanshu Singhal"
+UID: "115891944"
+output: html_notebook
+---
+```{r}
+# install the relevant library
+install.packages("openxlsx")
+library(openxlsx)
+# Read the data from the workbook
+bdata <- readWorkbook("elec.xlsx", sheet = 1)
+# View the specified column
+# View(bdata$Voltage)
+
+par(mfrow=c(1,3))
+# plot histogram for voltage
+hist(bdata$Voltage ,main="Voltage Distribution", xlab="Voltage Value", col = "grey")
+# plot box plot for voltage
+boxplot(bdata$Voltage, main="Voltage Distribution", ylab = "Voltage Value", col = "grey")
+# plot Q-Q plot for voltage
+qqnorm(bdata$Voltage, main = "Q-Q Plot for Voltage", col = "grey")
+qqline(bdata$Voltage)
+
+```
+CONCLUSIONS:
+From the above plots, it can be interpreted that-
+1) from the 2880 observations, around 2000+ samples are between 238-242 voltage level, which means that the data is pretty stable
+2) box plot implies the uniformity of the data,such that the median lies nearly in between the ranged values
+3) QQ plot for voltage implies that the obtained values are linear with the theoretical values, except at the lower and higher ends.
+
