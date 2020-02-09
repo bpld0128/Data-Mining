@@ -1,0 +1,78 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+setwd("D:\\UMD\\Courses\\Fall 19\\ENPM 809N\\Final Exam")
+library(openxlsx)
+
+# Section 2
+bank_data <- readWorkbook("bank.xlsx", sheet = 2)
+# str(bank_data)
+# head(bank_data)
+bank_data$Class <- as.factor(bank_data$Class)
+str(bank_data)
+head(bank_data)
+
+# split the data into training and test
+train <- bank_data[1:10,2:5]
+train
+
+test <- bank_data[11,2:5]
+test
+
+#the normalization function is created
+#nor <-function(x) { (x -min(x))/(max(x)-min(x))   }
+
+train_category <- bank_data[1:10,6]
+test_category <- bank_data[11,6]
+
+# Use KNN to classify the model
+pr <- knn(train, test, cl=train_category,k=3)
+pr
+tab <- table(pr,test_category)
+# It can be observed and concluded that out of 3 neigbors , 2 were given loan , hence, based on the given data, Chris should also be given loan.
+
+## Section 3
+library(openxlsx)
+
+# Read the data and see its description
+cc_data <- read.csv("CreditTransactions.csv", sep =",")
+summary(cc_data)
+head(cc_data)
+
+# convert F2 and F3 to numerical
+cc_data$F2 <- as.numeric(cc_data$F2)
+cc_data$F3 <- as.numeric(cc_data$F3)
+str(cc_data)
+
+# Split the data into two subsets
+set.seed(175)
+ind <- sample.int(n = nrow(cc_data), size = floor(.7*nrow(cc_data)), replace = F)
+train_data <- cc_data[ind, ]
+test_data <- cc_data[-ind, ]
+dim(train_data)
+dim(test_data)
+summary(test_data)
+
+cc_data$Designation <- ifelse(cc_data$Designation == "fraud" , 1, 0)
+cc_data$Designation <- factor(cc_data$Designation, levels = c(0,1))
+
+# Apply logistic regression on the model and class
+glm.model <- glm(Designation ~ F1 + F2 + F3, data = train_data, family = "binomial")
+summary(glm.model)
+glm.prob <- predict(glm.model, newdata = test_data, type = "response")
+glm.pred <- ifelse(glm.prob > 0.5, 1, 0)
+table(test_data$Designation, glm.pred)
+```
+## Conclusion
+Section 2
+Given the dataset, and using the K-nearest neigbors classification approach, for k=3, it can be said that Chris should be given a loan to his application as there are out of 3 neigbors, 2 satisfy the condition and one does not. Therefore, YES, the loan should be given.
+
+Section 3,
+After splitting the data, and using the logistic regression, to develop a predictive model, with the cutoff probability of 0.5, the accuracy obtained was 93.26% for the test data set of 210 values.
