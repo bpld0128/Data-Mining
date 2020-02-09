@@ -1,8 +1,6 @@
 ---
-title: "Assignment 3 - By Himanshu Singhal"
-output: html_notebook
-fig_width: 10 
-fig_height: 10
+title: "Clustering"
+output: Html_notebook
 ---
 
 ```{r fig_width = 20 ,fig_height = 20}
