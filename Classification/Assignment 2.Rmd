@@ -1,0 +1,109 @@
+---
+title: "Assignnment 2 - Himanshu Singhal"
+output: html_notebook
+Author: "Himanshu Singhal"
+---
+
+
+```{r}
+## TASK 1 - Household Power Consumption
+#load the file from the directory
+powerData<-read.csv("household_power_consumption.txt", stringsAsFactors = FALSE, sep = ";", header = TRUE)
+#check the data type
+str(powerData)
+#head(powerData)
+#convert the date into the specified format %d/%m/%Y
+#convert readings into numeric format
+powerData$Date <- as.Date(powerData$Date, format = "%d/%m/%Y")
+for (i in 3:9)
+    powerData[, i] <- as.numeric(powerData[, i])
+#rearrage data
+powerSub <- subset(powerData, Date >= "2007-02-04" & Date <= "2007-02-05")
+Date_Time <- paste(powerSub$Date, powerSub$Time)
+powerSub$DateTime <- as.POSIXct(Date_Time)
+#concatenate columns 3:9 with column 10
+powerData <- powerSub[, c(10, 3:9)]
+#plot the histogram
+hist(powerData$Global_reactive_power, main = "Global Reactive Power", xlab = "Global Reactive Power (kW)", col = "red")
+## TASK 2 - MPG
+#load the file from the directory
+library(openxlsx)
+autoData<-read.csv("mpg.csv")
+#head(autoData)
+str(autoData)
+#colnames(autoData)
+#get the data
+audiData<-autoData[autoData$manufacturer == "audi",]
+dodgeData<-autoData[autoData$manufacturer == "dodge",]
+hondaData<-autoData[autoData$manufacturer == "honda",]
+
+#plot the data
+plot(audiData$displ, audiData$cty,pch=16,xlab="Engine displacement",ylab="City mileage",col="red",xlim=c(1,6), ylim=c(6,30))
+points(dodgeData$displ, dodgeData$cty,pch=17,col="blue")
+points(hondaData$displ, hondaData$cty,pch=3,col="black")
+legend(x=5.5,y=30,c("Audi","Dodge", "Honda"),cex=.8,col=c("red","blue", "black"),pch=c(16,17,3))
+title(main="Relationship between engine displacement and city mileage")
+##TASK 3 - TITANIC 
+library(ggplot2)
+library(openxlsx)
+library(dplyr)
+titanicData<-read.xlsx("mydata.xlsx",sheet = "sheet1")
+#head(titanicData)
+#str(titanicData)
+# Removing uneccessary columns
+titanic_Data <- titanicData %>% select(-c(cabin, sex, ticket, name, sibsp, fare, age, parch, embarked, boat, body, home.dest, X1))
+#print the count of survived
+sumData<-table(titanic_Data$survived)
+#get the count for each class
+first_Data<-length(which(titanic_Data$pclass == "1st"))
+second_Data<-length(which(titanic_Data$pclass == "2nd"))
+third_Data<-length(which(titanic_Data$pclass == "3rd"))
+#get the count of survived in each class
+first_survived<-length(which(titanic_Data$pclass == "1st" & titanic_Data$survived == 1))
+second_survived<-length(which(titanic_Data$pclass == "2nd" & titanic_Data$survived == 1))
+third_survived<-length(which(titanic_Data$pclass == "3rd" & titanic_Data$survived == 1))
+#find the survival rate
+first_rate<-first_survived/first_Data
+second_rate<-second_survived/second_Data
+third_rate<-third_survived/third_Data
+x_axis<-c("1st","2nd","3rd")
+y_axis<-c(first_rate,second_rate,third_rate)
+df<-data.frame(x_axis,y_axis)
+#str(df)
+titanic_plot <- ggplot(data=df,aes(x=df$x_axis,y=df$y_axis,group=1)) + labs(x="Class of travel",
+y="Survival Rate") + scale_y_continuous(breaks = seq(0,1,by=0.2),limits=c(0,1)) + geom_line(color="blue",size=2) + geom_point(color="blue",size=4)
+titanic_plot <- titanic_plot + theme_bw()+ theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) + theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(colour = "black", size=1, fill=NA))
+titanic_plot
+
+```
+CONCLUSION:
+
+QUESTION 1:
+Reactive Power is the resultant power in kW of an Ac circuit when the load is purely reactive like capacitive or inductive. The current is out of phase with voltage by usually 90 degrees.
+The process to obtain this histogram is as follows - 
+1).The entire .csv file was uploaded along with the headers using the read.csv function.
+2).Converts the character into a date format.
+3).Concatenate vectors after converting them
+4).Represent calender date and time as a separate new column
+5).Concatenate all the columns
+6).Plot the histogram
+It can be observed that the global reactive power for this house is low, meaning that Global Reactive power of 0-0.1 kW is used most of the time while high power is rarely used indicating that the household is a lower power consumption houshold.
+
+
+QUESTION 2:
+The process flow to obtain this plot is-
+1). Load the .csv file using read.csv
+2). Create subsets for the desired data from the main data set
+3). plot the data points and add the other two data sets on the same graph
+4). show the legend and the title accordingly.
+It can be observed that although the actual data set for Audi, Dodge and Honda contained 18,37 and 9 observations respectively, only 14, 19 and 8 respectively can be visualized on the plot graph because of the repitition. Also, it can be said that Honda cars have better mileage compared to Audi cars for same engine displacement. On the other hand, Dodge cars have maximum engine displacement but low city mileage indicating that Dodge cars have more power and consume more fuel.Audi Cars are somewhere in between with medium city mileage and normal engine displacement.
+
+  
+QUESTION 3 : 
+It can be observed from the above plot that 1st class passengers had a much better survival rate than 3rd class passengers. Few of the reasons could be access to better resources, safety equipments and awareness of the surroundings. It can also be observed that the trend is almost linear such that survival rate decreases linearly with the class.
+Survival Rate of the 1st class passengers - 0.6195
+Survival Rate of the 2ns class passengers - 0.4296
+Survival Rate of the 3rd class passengers - 0.2552
