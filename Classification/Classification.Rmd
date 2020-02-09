@@ -1,5 +1,5 @@
 ---
-title: "Assignnment 2 - Himanshu Singhal"
+title: "Classification"
 output: html_notebook
 Author: "Himanshu Singhal"
 ---
