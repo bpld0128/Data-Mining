@@ -1,0 +1,102 @@
+---
+title: "Final Project"
+output: html_notebook
+Author: "Himanshu Singhal"
+---
+
+```{r}
+# set working directory
+setwd("D:\\UMD\\Courses\\Fall 19\\ENPM 809N\\Final Project")
+
+
+# install packages
+#install.packages("xlsx")
+#install.packages("car")
+#install.packages("caret")
+#install.packages("party")
+#install.packages("psych")
+#install.packages("C50")
+
+# Load packages
+library(openxlsx)
+library(car)
+library(caret)
+library(party)
+library(psych)
+library(C50)
+
+# Read the data and see its description
+p_data <- readWorkbook("xyz1.xlsx", sheet = 1)
+summary(p_data)
+str(p_data)
+
+# Check for any NA or zero values
+colSums(is.na(p_data))
+
+## Task 1
+# Split the data into two subsets: Training (70%) and Testing (30%)
+set.seed(785)
+ind <- sample.int(n = nrow(p_data), size = floor(.7*nrow(p_data)), replace = F)
+train_data <- p_data[ind, ]
+test_data <- p_data[-ind, ]
+dim(train_data)
+dim(test_data)
+
+#test for Multicollinearity 
+#Use the vif function in the car package to calculate variance inflation factors.
+model1<- lm(Response~., data = train_data)
+#summary(model1)
+car::vif(model1)
+
+# create a reduced linear regression model
+reduced_model1<- lm(Response~Var18+Var17+Var05+Var06+Var01, data = train_data)
+summary(reduced_model1)
+
+## Task 2
+# Develope a new linear regression model
+# only 3 predictors are significant in predicting response
+new_model<- lm(Response~Var18+Var17+Var05, data = train_data)
+summary(new_model)
+
+# Predict the response using test set
+p = predict(new_model,test_data)
+summary(p)
+#error <- p - test_data$Response
+RMSE<- function(error){sqrt(mean(error^2))}
+RMSE(new_model$residuals)
+#MAE<- function(error){mean(abs(error))}
+#MAE(new_model$residuals)
+summary(new_model)$r.squared
+
+## Task 3
+# Factorize the data into 4 equal categories and use decision tree
+
+# New Method
+fact_data<-cut(p_data$Response, 4, labels = c("low","med","high", "very high"))
+head(fact_data)
+p_data$Response <- fact_data
+
+
+# Create decision tree
+pdata_ctree <- ctree(Response~., data = p_data)
+# draw and print the prediction table
+table(predict(pdata_ctree), p_data$Response)
+#print(pdata_ctree)
+plot(pdata_ctree)
+
+# Use if-else rules
+p_data$Response<-as.factor(p_data$Response)
+rules <- C5.0(x = p_data[, -1], y = p_data$Response, rules = TRUE)
+rules
+summary(rules)
+
+```
+## Comments
+Task 1 
+The raw data file (.xlsx) was read and its structure was observed. Since the data has no Nas or 0 values, the data was used as it is by splitting it into training and test set.Then, using Variation-infation factor (VIF), a multicollinearity test was performed to reduce the independent variables to no more than 5 based on the number of *** against each varibles, which tells us about the correlation.
+
+Task 2
+Working with training set only, VIF was again performed and independent variables were further dropped from 5 to 3, depending upon the correlation. A new model was developed to predict the Response using the test set. RMSE and R2 was computed on the test data set. Root Mean Square Error (RMSE) is a  measure of the average deviation of the estimates from the observed value and can be in any range. R2 is the fraction of the total sum of squares that is explained by regression and always lie between 0 and 1.
+
+Task 3
+For task 3, original data set before splitting was used. The response column was factorized into 4 categories of equal intervals and the ctree function was used to develop a classification model. The column was categorized as "low", "medium", "high", and "very high" based on the response value. The prediction table was drawn to assign the future instances of predictors. The total number of rules is 8 and the decision tree has only 2 variables.
