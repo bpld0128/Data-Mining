@@ -1,12 +1,12 @@
 ---
-title: "Final Project"
+title: "Predictors"
 output: html_notebook
 Author: "Himanshu Singhal"
 ---
 
 ```{r}
 # set working directory
-setwd("D:\\UMD\\Courses\\Fall 19\\ENPM 809N\\Final Project")
+setwd("D:\xyz")
 
 
 # install packages
