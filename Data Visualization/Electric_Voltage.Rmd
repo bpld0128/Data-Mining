@@ -4,9 +4,8 @@ output:
   pdf_document: default
 ---
 ---
-Title: "Assignment 1_voltage"
+Title: "Electric_voltage"
 Author: "Himanshu Singhal"
-UID: "115891944"
 output: html_notebook
 ---
 ```{r}
